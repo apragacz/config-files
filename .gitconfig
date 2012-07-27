@@ -1,0 +1,17 @@
+[user]
+	name = Andrzej Pragacz
+	email = apragacz@o2.pl
+[alias]
+	i = commit
+	o = checkout
+	t = status
+	r = branch
+	f = diff
+	g = log
+	g = merge
+	t = mergetool
+	pre = pull --rebase
+	contains = branch --contains
+	rcontains = branch -r --contains
+	praise = blame
+	wtf = blame
