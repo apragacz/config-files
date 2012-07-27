@@ -1,0 +1,15 @@
+{
+    "font_size": 11.0,
+    "auto_complete": true,
+    "caret_style": "wide",
+    "color_scheme": "Packages/Color Scheme - Default/Sunburst.tmTheme",
+    "ensure_newline_at_eof_on_save": true,
+    "translate_tabs_to_spaces": true,
+    "trim_trailing_white_space_on_save": true,
+    "highlight_line": true,
+    "line_numbers": true,
+    "rulers": [80],
+    "tab_size": 4,
+    "word_wrap": false
+}
+
