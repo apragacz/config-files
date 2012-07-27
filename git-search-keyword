@@ -1,0 +1,9 @@
+#!/bin/bash
+query="$1"
+git rev-list --all | (
+    while read revision; do
+        git grep -I -F "$query" $revision
+    done
+)
+
+
