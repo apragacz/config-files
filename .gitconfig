@@ -1,15 +1,12 @@
 [user]
 	name = Andrzej Pragacz
-	email = apragacz@o2.pl
+	email = andrzej.pragacz@10clouds.com
 [alias]
-	i = commit
-	o = checkout
-	t = status
-	r = branch
-	f = diff
-	g = log
-	g = merge
-	t = mergetool
+	ci = commit
+	co = checkout
+	st = status
+	df = diff
+    l = log
 	pre = pull --rebase
 	contains = branch --contains
 	rcontains = branch -r --contains
