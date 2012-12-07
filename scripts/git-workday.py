@@ -6,6 +6,8 @@ import re
 import functools
 import datetime
 
+from functools import partial
+
 Event = collections.namedtuple('Event', ('commit_hash', 'author_email', 'datetime', 'ticket', 'comment'))
 
 PROJECTS = ['MTRANSLATE']
@@ -25,7 +27,24 @@ def identity(elem):
 
 def pretty_form(event):
     ticket = event.ticket if event.ticket else '<Unknown>'
-    return '{} {} {}'.format(event.datetime, ticket, event.comment)
+    return '{}'.format(event.comment)
+
+
+def pretty_form_tuple(event_group):
+    ticket = event_group[0].ticket if event_group[0].ticket else '<Unknown>'
+    datetime_start = event_group[0].datetime
+    datetime_end = event_group[-1].datetime
+    return '\n{} {}-{}\n\n{}\n'.format(ticket, datetime_start, datetime_end, '\n'.join(map(pretty_form, event_group)))
+
+
+def group_events(event_groups, event, equiv_pred):
+    last_group = event_groups[-1]
+    if not last_group:
+        return  event_groups[:-1] + [(event,)]
+    elif equiv_pred(last_group[0], event):
+        return event_groups[:-1] + [last_group + (event,)]
+    else:
+        return event_groups + [(event,)]
 
 
 def event_from_gitlog(line):
@@ -51,6 +70,10 @@ def event_from_gitlog(line):
             datetime=dt,
             ticket=ticket, comment=comment,
             author_email=author_email)
+
+
+def equivalence_by_key(event1, event2, key):
+    return key(event1) == key(event2)
 
 
 def test_date(event, date):
@@ -79,11 +102,13 @@ def main(args):
                             stdin=subprocess.PIPE, stdout=subprocess.PIPE,
                             close_fds=True)
     p_out = p.stdout
-    process = compose(functools.partial(map, pretty_form),
-                        functools.partial(filter, functools.partial(test_date, date=current_date)),
-                        functools.partial(filter, functools.partial(test_email, email=email)),
-                        functools.partial(ilimit, limit=1000),
-                        functools.partial(map, event_from_gitlog))
+    process = compose(partial(map, pretty_form_tuple),
+                        lambda events: reduce(partial(group_events,equiv_pred=partial(equivalence_by_key,key=lambda e:e.ticket)), events, [()]),
+                        partial(sorted, key=lambda e: e.datetime),
+                        partial(filter, partial(test_date, date=current_date)),
+                        partial(filter, partial(test_email, email=email)),
+                        partial(ilimit, limit=1000),
+                        partial(map, event_from_gitlog))
     for result in process(p_out):
         print result
     p_out.close()
