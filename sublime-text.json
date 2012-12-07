@@ -2,6 +2,7 @@
     "font_size": 11.0,
     "auto_complete": true,
     "caret_style": "wide",
+    "indent_to_bracket": true,
     "color_scheme": "Packages/Color Scheme - Default/Sunburst.tmTheme",
     "ensure_newline_at_eof_on_save": true,
     "translate_tabs_to_spaces": true,
