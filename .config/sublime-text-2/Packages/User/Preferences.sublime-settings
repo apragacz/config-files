@@ -1,5 +1,4 @@
 {
-    "font_size": 11.0,
     "auto_complete": true,
     "caret_style": "wide",
     "indent_to_bracket": true,
@@ -13,4 +12,3 @@
     "tab_size": 4,
     "word_wrap": false
 }
-
