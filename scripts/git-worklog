@@ -10,11 +10,8 @@ from functools import partial
 
 Event = collections.namedtuple('Event', ('commit_hash', 'author_email', 'datetime', 'ticket', 'comment'))
 
-PROJECTS = ['MTRANSLATE']
-
-
-def compose_two(f, g):
-    return lambda elem: f(g(elem))
+GIT_EMAIL_FILENAME='.git/AUTHOR_EMAIL'
+JIRA_PROJECT_FILENAME='.git/JIRA_PROJECT'
 
 
 def compose(*args):
@@ -23,6 +20,15 @@ def compose(*args):
 
 def identity(elem):
     return elem
+
+
+def ilimit(iterable, limit=100, offset=0):
+    end_offset = offset + limit
+    for i, elem in enumerate(iterable):
+        if offset <= i and i < end_offset:
+            yield elem
+        elif end_offset <= i:
+            return
 
 
 def pretty_form(event):
@@ -37,8 +43,8 @@ def pretty_form_tuple(event_group):
     return '\n{} {}-{}\n\n{}\n'.format(ticket, datetime_start, datetime_end, '\n'.join(map(pretty_form, event_group)))
 
 
-def group_events(event_groups, event, equiv_pred):
-    last_group = event_groups[-1]
+def add_to_event_group(event_groups, event, equiv_pred):
+    last_group = event_groups[-1] if len(event_groups) > 0 else ()
     if not last_group:
         return  event_groups[:-1] + [(event,)]
     elif equiv_pred(last_group[0], event):
@@ -46,8 +52,10 @@ def group_events(event_groups, event, equiv_pred):
     else:
         return event_groups + [(event,)]
 
+def group_events(events):
+    return reduce(partial(add_to_event_group,equiv_pred=partial(equivalence_by_key,key=lambda e:e.ticket)), events, [])
 
-def event_from_gitlog(line):
+def event_from_gitlog(line, project_name):
     sp = line.strip().split(' ', 3)
     commit_hash = sp[0]
     timestamp = int(sp[1])
@@ -55,7 +63,7 @@ def event_from_gitlog(line):
     full_comment = sp[3]
     comment_sp = full_comment.split(' ', 1)
     dt = datetime.datetime.fromtimestamp(timestamp)
-    ticket_pat = '^({})\-[0-9]+$'.format('|'.join(PROJECTS))
+    ticket_pat = '^({})\-[0-9]+$'.format(project_name)
     ticket_re = re.compile(ticket_pat)
     if ticket_re.search(comment_sp[0]):
         ticket = comment_sp[0]
@@ -84,18 +92,47 @@ def test_email(event, email):
     return event.author_email == email
 
 
-def ilimit(iterable, limit=100, offset=0):
-    end_offset = offset + limit
-    for i, elem in enumerate(iterable):
-        if offset <= i and i < end_offset:
-            yield elem
-        elif end_offset <= i:
-            return
+def content_of_filename(filename, default=None):
+    try:
+        with open(filename, 'rt') as f:
+            return f.read().strip()
+    except IOError:
+        return None
 
 
-def main(args):
-    date_sp = args[1].split('-', 2)
-    email = args[2]
+def set_filename_content(filename, content):
+    with open(filename, 'wt') as f:
+        f.write(content)
+
+
+def handle_set_project(project_name):
+    set_filename_content(JIRA_PROJECT_FILENAME, project_name)
+    print('project name set to {}'.format(project_name))
+
+
+def handle_get_project():
+    print('project name is {}'.format(content_of_filename(JIRA_PROJECT_FILENAME)))
+
+
+def handle_set_email(email):
+    set_filename_content(GIT_EMAIL_FILENAME, email)
+    print('email set to {}'.format(email))
+
+
+def handle_get_email():
+    print('email is {}'.format(content_of_filename(GIT_EMAIL_FILENAME)))
+
+
+def handle_day(date_string):
+    date_sp = date_string.split('-', 2)
+    email = content_of_filename(GIT_EMAIL_FILENAME)
+    project_name = content_of_filename(JIRA_PROJECT_FILENAME)
+    if email is None:
+        print('no email set')
+        return
+    if project_name is None:
+        print('no project name set')
+        return
     current_date = datetime.date(int(date_sp[0]), int(date_sp[1]),
                                     int(date_sp[2]))
     p = subprocess.Popen(['git', 'log', '--format=%H %at %ae %s'],
@@ -103,15 +140,32 @@ def main(args):
                             close_fds=True)
     p_out = p.stdout
     process = compose(partial(map, pretty_form_tuple),
-                        lambda events: reduce(partial(group_events,equiv_pred=partial(equivalence_by_key,key=lambda e:e.ticket)), events, [()]),
+                        group_events,
                         partial(sorted, key=lambda e: e.datetime),
                         partial(filter, partial(test_date, date=current_date)),
                         partial(filter, partial(test_email, email=email)),
                         partial(ilimit, limit=1000),
-                        partial(map, event_from_gitlog))
+                        partial(map, partial(event_from_gitlog,project_name=project_name)))
     for result in process(p_out):
-        print result
+        print(result)
     p_out.close()
+
+
+def main(args):
+    cmd = args[1] if len(args) > 1 else None
+    if cmd == 'set-email':
+        handle_set_email(args[2])
+    elif cmd == 'set-project':
+        handle_set_project(args[2])
+    elif cmd == 'get-email':
+        handle_get_email()
+    elif cmd == 'get-project':
+        handle_get_project()
+    elif cmd == 'day':
+        handle_day(args[2])
+    else:
+        print('invalid command')
+
 
 if __name__ == '__main__':
     main(sys.argv)
