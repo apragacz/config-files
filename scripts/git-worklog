@@ -3,15 +3,19 @@ import subprocess
 import sys
 import collections
 import re
-import functools
 import datetime
 
 from functools import partial
 
-Event = collections.namedtuple('Event', ('commit_hash', 'author_email', 'datetime', 'ticket', 'comment'))
+Event = collections.namedtuple('Event',
+                               ('commit_hash',
+                                'author_email',
+                                'datetime',
+                                'ticket',
+                                'comment'))
 
-GIT_EMAIL_FILENAME='.git/AUTHOR_EMAIL'
-JIRA_PROJECT_FILENAME='.git/JIRA_PROJECT'
+GIT_EMAIL_FILENAME = '.git/AUTHOR_EMAIL'
+JIRA_PROJECT_FILENAME = '.git/JIRA_PROJECT'
 
 
 def compose(*args):
@@ -32,7 +36,6 @@ def ilimit(iterable, limit=100, offset=0):
 
 
 def pretty_form(event):
-    ticket = event.ticket if event.ticket else '<Unknown>'
     return '{}'.format(event.comment)
 
 
@@ -40,20 +43,27 @@ def pretty_form_tuple(event_group):
     ticket = event_group[0].ticket if event_group[0].ticket else '<Unknown>'
     datetime_start = event_group[0].datetime
     datetime_end = event_group[-1].datetime
-    return '\n{} {}-{}\n\n{}\n'.format(ticket, datetime_start, datetime_end, '\n'.join(map(pretty_form, event_group)))
+    return '\n{} {}-{}\n\n{}\n'.format(ticket, datetime_start, datetime_end,
+                                       '\n'.join(map(pretty_form,
+                                                     event_group)))
 
 
 def add_to_event_group(event_groups, event, equiv_pred):
     last_group = event_groups[-1] if len(event_groups) > 0 else ()
     if not last_group:
-        return  event_groups[:-1] + [(event,)]
+        return event_groups[:-1] + [(event,)]
     elif equiv_pred(last_group[0], event):
         return event_groups[:-1] + [last_group + (event,)]
     else:
         return event_groups + [(event,)]
 
+
 def group_events(events):
-    return reduce(partial(add_to_event_group,equiv_pred=partial(equivalence_by_key,key=lambda e:e.ticket)), events, [])
+    return reduce(partial(add_to_event_group,
+                          equiv_pred=partial(equivalence_by_key,
+                                             key=lambda e: e. ticket)),
+                  events, [])
+
 
 def event_from_gitlog(line, project_name):
     sp = line.strip().split(' ', 3)
@@ -111,7 +121,8 @@ def handle_set_project(project_name):
 
 
 def handle_get_project():
-    print('project name is {}'.format(content_of_filename(JIRA_PROJECT_FILENAME)))
+    project_name = content_of_filename(JIRA_PROJECT_FILENAME)
+    print('project name is {}'.format(project_name))
 
 
 def handle_set_email(email):
@@ -120,7 +131,8 @@ def handle_set_email(email):
 
 
 def handle_get_email():
-    print('email is {}'.format(content_of_filename(GIT_EMAIL_FILENAME)))
+    email = content_of_filename(GIT_EMAIL_FILENAME)
+    print('email is {}'.format(email))
 
 
 def handle_day(date_string):
@@ -145,7 +157,8 @@ def handle_day(date_string):
                         partial(filter, partial(test_date, date=current_date)),
                         partial(filter, partial(test_email, email=email)),
                         partial(ilimit, limit=1000),
-                        partial(map, partial(event_from_gitlog,project_name=project_name)))
+                        partial(map, partial(event_from_gitlog,
+                                             project_name=project_name)))
     for result in process(p_out):
         print(result)
     p_out.close()
