@@ -6,6 +6,7 @@ import re
 import datetime
 
 from functools import partial
+from itertools import tee, chain, izip
 
 Event = collections.namedtuple('Event',
                                ('commit_hash',
@@ -33,6 +34,38 @@ def ilimit(iterable, limit=100, offset=0):
             yield elem
         elif end_offset <= i:
             return
+
+
+def idiff_tuples(iterable, before=1, after=0, begin=[], end=[]):
+    if not isinstance(begin, (tuple, list)):
+        begin = [begin] * before
+    if not isinstance(end, (tuple, list)):
+        end = [end] * after
+    tee_iters = tee(iterable, before + 1 + after)
+    omit_begin_len = before - len(begin)
+    omit_end_len = after - len(end)
+
+    def prepend(it, index):
+        after_index
+        if index > 0:
+            for _ in range(index):
+                it.next()
+        else:
+
+
+    iters = []
+    for i, tee_it in enumerate(tee_iters):
+        index1 = i - before
+        index2 = i - end
+        if i < 0:
+            if -i <= len(begin):
+
+        it = begin[i]
+        iters.append()
+
+    return izip(*iters)
+
+print idiff_tuples(range(10), begin=None, end=None)
 
 
 def pretty_form(event):
@@ -135,7 +168,7 @@ def handle_get_email():
     print('email is {}'.format(email))
 
 
-def handle_day(date_string):
+def handle_day(date_string, start_hour_str, end_hour_str):
     date_sp = date_string.split('-', 2)
     email = content_of_filename(GIT_EMAIL_FILENAME)
     project_name = content_of_filename(JIRA_PROJECT_FILENAME)
@@ -165,7 +198,9 @@ def handle_day(date_string):
 
 
 def main(args):
-    cmd = args[1] if len(args) > 1 else None
+    def get_arg(index, default=None):
+        return args[index] if len(args) > index else default
+    cmd = get_arg(1)
     if cmd == 'set-email':
         handle_set_email(args[2])
     elif cmd == 'set-project':
@@ -175,9 +210,12 @@ def main(args):
     elif cmd == 'get-project':
         handle_get_project()
     elif cmd == 'day':
-        handle_day(args[2])
+        date_str = args[2]
+        start_hour_str = get_arg(3)
+        end_hour_str = get_arg(4)
+        handle_day(date_str, start_hour_str, end_hour_str)
     else:
-        print('invalid command')
+        print('invalid command \'{}\''.format(cmd))
 
 
 if __name__ == '__main__':
