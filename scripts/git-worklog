@@ -4,6 +4,7 @@ import sys
 import collections
 import re
 import datetime
+import os.path
 
 from functools import partial
 
@@ -85,9 +86,9 @@ def event_from_gitlog(line, project_name):
         ticket = None
         comment = full_comment
     return Event(commit_hash=commit_hash,
-            datetime=dt,
-            ticket=ticket, comment=comment,
-            author_email=author_email)
+                 datetime=dt,
+                 ticket=ticket, comment=comment,
+                 author_email=author_email)
 
 
 def equivalence_by_key(event1, event2, key):
@@ -115,50 +116,73 @@ def set_filename_content(filename, content):
         f.write(content)
 
 
+def get_git_rootdir():
+    cmd = ['git', 'rev-parse', '--show-toplevel']
+    dirpath = subprocess.check_output(cmd).rstrip()
+    if not os.path.exists(dirpath):
+        raise ValueError('git directory {} does not exists'.format(dirpath))
+    return dirpath
+
+
 def handle_set_project(project_name):
-    set_filename_content(JIRA_PROJECT_FILENAME, project_name)
+    rootdir = get_git_rootdir()
+    set_filename_content(os.path.join(rootdir, JIRA_PROJECT_FILENAME),
+                         project_name)
     print('project name set to {}'.format(project_name))
 
 
 def handle_get_project():
-    project_name = content_of_filename(JIRA_PROJECT_FILENAME)
+    rootdir = get_git_rootdir()
+    project_name = content_of_filename(os.path.join(rootdir,
+                                                    JIRA_PROJECT_FILENAME))
     print('project name is {}'.format(project_name))
 
 
 def handle_set_email(email):
-    set_filename_content(GIT_EMAIL_FILENAME, email)
+    rootdir = get_git_rootdir()
+    set_filename_content(os.path.join(rootdir, GIT_EMAIL_FILENAME), email)
     print('email set to {}'.format(email))
 
 
 def handle_get_email():
-    email = content_of_filename(GIT_EMAIL_FILENAME)
+    rootdir = get_git_rootdir()
+    email = content_of_filename(os.path.join(rootdir, GIT_EMAIL_FILENAME))
     print('email is {}'.format(email))
 
 
 def handle_day(date_string):
+    rootdir = get_git_rootdir()
     date_sp = date_string.split('-', 2)
-    email = content_of_filename(GIT_EMAIL_FILENAME)
-    project_name = content_of_filename(JIRA_PROJECT_FILENAME)
+    email = content_of_filename(os.path.join(rootdir, GIT_EMAIL_FILENAME))
+    project_name = content_of_filename(os.path.join(rootdir,
+                                                    JIRA_PROJECT_FILENAME))
     if email is None:
         print('no email set')
         return
     if project_name is None:
         print('no project name set')
         return
-    current_date = datetime.date(int(date_sp[0]), int(date_sp[1]),
-                                    int(date_sp[2]))
+    if (len(date_sp) != 3
+            or len(date_sp[0]) != 4
+            or len(date_sp[1]) != 2
+            or len(date_sp[2]) != 2):
+        print('invalid date format (not YYYY-MM-DD)')
+        return
+    current_date = datetime.date(int(date_sp[0]),
+                                 int(date_sp[1]),
+                                 int(date_sp[2]))
     p = subprocess.Popen(['git', 'log', '--format=%H %at %ae %s'],
-                            stdin=subprocess.PIPE, stdout=subprocess.PIPE,
-                            close_fds=True)
+                         stdin=subprocess.PIPE, stdout=subprocess.PIPE,
+                         close_fds=True)
     p_out = p.stdout
     process = compose(partial(map, pretty_form_tuple),
-                        group_events,
-                        partial(sorted, key=lambda e: e.datetime),
-                        partial(filter, partial(test_date, date=current_date)),
-                        partial(filter, partial(test_email, email=email)),
-                        partial(ilimit, limit=1000),
-                        partial(map, partial(event_from_gitlog,
-                                             project_name=project_name)))
+                      group_events,
+                      partial(sorted, key=lambda e: e.datetime),
+                      partial(filter, partial(test_date, date=current_date)),
+                      partial(filter, partial(test_email, email=email)),
+                      partial(ilimit, limit=1000),
+                      partial(map, partial(event_from_gitlog,
+                                           project_name=project_name)))
     for result in process(p_out):
         print(result)
     p_out.close()
