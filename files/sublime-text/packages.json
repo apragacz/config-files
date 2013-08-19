@@ -1,0 +1,42 @@
+[
+    {
+        "name": "Theme - Soda",
+        "repository_url": "https://github.com/buymeasoda/soda-theme/"
+    },
+    {
+        "name": "Side​Bar​Enhancements",
+        "repository_url": "https://github.com/titoBouzout/SideBarEnhancements"
+    },
+    {
+        "name": "Git",
+        "repository_url": "https://github.com/kemayo/sublime-text-2-git"
+    },
+    {
+        "name": "Sublime​Linter",
+        "repository_url": "http://github.com/SublimeLinter/SublimeLinter"
+    },
+    {
+        "name": "Sublime​Code​Intel",
+        "repository_url": "https://github.com/SublimeCodeIntel/SublimeCodeIntel"
+    },
+    {
+        "name": "Djaneiro",
+        "repository_url": "https://github.com/squ1b3r/Djaneiro"
+    },
+    {
+        "name": "Coffee​Script",
+        "repository_url": "https://github.com/Xavura/CoffeeScript-Sublime-Plugin"
+    },
+    {
+        "name": "LESS",
+        "repository_url": "https://github.com/danro/LESS-sublime"
+    },
+    {
+        "name": "EJS",
+        "repository_url": "https://github.com/samholmes/EJS.tmLanguage"
+    },
+    {
+        "name": "La​Te​XTools",
+        "repository_url": "https://github.com/SublimeText/LaTeXTools"
+    }
+]
