@@ -2,11 +2,12 @@
 	name = Andrzej Pragacz
 	email = apragacz@o2.pl
 [alias]
-	ci = commit
+	wl = jira-worklog
+	ci = jira-worklog commit
 	co = checkout
 	st = status
 	df = diff
-    l = log
+	l = log
 	pre = pull --rebase
 	contains = branch --contains
 	rcontains = branch -r --contains
