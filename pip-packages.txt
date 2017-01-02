@@ -1,0 +1,5 @@
+ipython
+stormssh
+shyaml
+docker-compose
+git+git://github.com/szopu/git-jira-worklog.git
