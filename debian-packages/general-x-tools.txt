@@ -1,0 +1,2 @@
+ubuntu-restricted-extras
+xclip

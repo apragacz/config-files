@@ -1,0 +1,4 @@
+ant
+openjdk-7-jdk
+openjdk-7-jre
+openjdk-7-source

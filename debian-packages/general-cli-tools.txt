@@ -1,0 +1,10 @@
+tmux
+vim
+htop
+whois
+curl
+wget
+jq
+sysstat
+iotop
+git

@@ -4,4 +4,4 @@ from .base import create_config_symlink
 
 
 def configure(installation):
-    create_config_symlink(installation, '.vimrc')
+    create_config_symlink(installation, '.tmux.conf')

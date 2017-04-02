@@ -1,0 +1,6 @@
+vagrant
+virtualbox
+qemu-kvm
+libvirt-bin
+ubuntu-vm-builder
+bridge-utils
