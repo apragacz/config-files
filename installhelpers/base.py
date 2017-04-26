@@ -55,21 +55,59 @@ def chdir(dir_path):
 
 class Installation(object):
 
-    def __init__(self, home_path, repo_path, params={}):
+    def __init__(self, home_path, repo_path, params=None):
+        if params is None:
+            params = {}
         self.home_path = home_path
         self.repo_path = repo_path
-        self._params = params
+        self._params = {}
+        self._params.update(params)
 
     @property
     def files_path(self):
         return os.path.join(self.repo_path, 'files')
 
-    def get_params(self, names):
-        for name in names:
+    @property
+    def params_path(self):
+        return os.path.join(self.repo_path, '.params.json')
+
+    def _load_saved_params(self):
+        try:
+            with open(self.params_path, 'r') as f:
+                return json.load(f)
+        except IOError:
+            return {}
+
+    def _save_params(self, params):
+        with open(self.params_path, 'w') as f:
+            json.dump(params, f)
+
+    def ask_for_params(self, required_names):
+        saved_params = self._load_saved_params()
+        for name in required_names:
+            if name in self._params:
+                continue
+            value = ''
+            while value == '':
+                saved_value = saved_params.get(name)
+                prompt_fmt = 'Provide {name}[{saved_value}]: ' if saved_value is not None else 'Provide {name}: '
+                prompt = prompt_fmt.format(
+                    name=name,
+                    saved_value=saved_value,
+                )
+                value = six.moves.input(prompt)
+                if not value and saved_value is not None:
+                    value = saved_value
+            self._params[name] = value
+
+    def get_params(self, required_names):
+        for name in required_names:
             if name not in self._params:
-                self._params[name] = six.moves.input(
-                    'Provide {name}: '.format(name=name))
+                raise ValueError("No '{name}' in params".format(name=name))
         return self._params
+
+    def tear_down(self):
+        self._save_params(self._params)
 
 
 def create_config_symlink(installation, config_local_path):
@@ -96,3 +134,19 @@ def copy_config_template(installation, config_local_path, param_names=[],
         template_params.update(installation.get_params(param_names))
         template_params.update(params)
         f.write(cfg_template.render(**template_params))
+
+
+def append_config_line(installation, config_local_path, config_line,
+                       if_line_not_exists=True):
+    if '\n' in config_line:
+        raise ValueError('Newline found in {line!r}'.format(config_line=config_line))
+    cfg_path = os.path.join(installation.home_path, config_local_path)
+    if not os.path.exists(cfg_path):
+        return
+    with open(cfg_path, 'rt') as f:
+        cfg_lines = [line.strip() for line in f]
+    if if_line_not_exists and config_line in cfg_lines:
+        return
+    with open(cfg_path, 'at') as f:
+        f.write(config_line)
+        f.write('\n')
