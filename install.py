@@ -7,6 +7,7 @@ from installhelpers import (
     git,
     tmux,
     vim,
+    python_cli_tools,
 )
 
 
@@ -16,7 +17,7 @@ def main():
         homedir_path,
         os.path.join(homedir_path, 'config-files'),
     )
-    modules = [bash, git, tmux, vim]
+    modules = [bash, git, tmux, vim, python_cli_tools]
     for module in modules:
         ask_for_params = getattr(module, 'ask_for_params', None)
         if not ask_for_params:
