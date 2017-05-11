@@ -146,13 +146,14 @@ def append_config_line(installation, config_local_path, config_line,
     if '\n' in config_line:
         raise ValueError('Newline found in {line!r}'.format(config_line=config_line))
     cfg_path = os.path.join(installation.home_path, config_local_path)
-    if not os.path.exists(cfg_path):
-        return
-    with open(cfg_path, 'rt') as f:
-        cfg_lines = [line.strip() for line in f]
+    if os.path.exists(cfg_path):
+        with open(cfg_path, 'rt') as f:
+            cfg_lines = [line.strip() for line in f]
+        backup(installation, cfg_path)
+    else:
+        cfg_lines = []
     if if_line_not_exists and config_line in cfg_lines:
         return
-    backup(installation, cfg_path)
     with open(cfg_path, 'at') as f:
         f.write(config_line)
         f.write('\n')
