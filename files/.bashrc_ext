@@ -6,10 +6,17 @@ PATH="$PATH:$HOME/.local/bin"
 PATH="$PATH:$HOME/config-files/scripts"
 export PATH
 
-PS1='${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[33m\]$(parse_git_branch)\[\033[00m\]\n\$ '
+# eval is for additional checking that parse_git_branch exists in given context
+if [ "$(id -u)" = "0" ]; then
+    PS1='${debian_chroot:+($debian_chroot)}\[\033[01;31m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[33m\]$(eval "parse_git_branch" 2> /dev/null)\[\033[00m\]\n\$ '
+else
+    PS1='${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[33m\]$(eval "parse_git_branch" 2> /dev/null)\[\033[00m\]\n\$ '
+fi
 
-EDITOR="vim"
-export EDITOR
+if which vim > /dev/null; then
+    EDITOR="vim"
+    export EDITOR
+fi
 
 HHCONFIG=hicolor
 shopt -s histappend
@@ -19,6 +26,8 @@ HISTCONTROL=ignoreboth
 HISTIGNORE='ls:bg:fg:history'
 PROMPT_COMMAND='history -a'
 
-if [[ $- =~ .*i.* ]]; then
-    bind '"\C-r": "\C-a hh \C-j"'
+if which hh > /dev/null; then
+    if [[ $- =~ .*i.* ]]; then
+        bind '"\C-r": "\C-a hh -- \C-j"'
+    fi
 fi

@@ -1,4 +1,4 @@
-ipython
+ipython==5.3.0
 stormssh
 shyaml
 docker-compose
