@@ -1,0 +1,55 @@
+#!/bin/bash
+
+set -euo pipefail
+
+git_config() {
+    local config_name="$1"
+    local default_value="$2"
+    local result="$(git config -l | grep "${config_name}=" | cut -d'=' -f 2)"
+    if [ -n "${result}" ]; then
+        echo "${result}"
+    else
+        echo "${default_value}"
+    fi
+}
+
+readonly START_BRANCH_NAME="$(git rev-parse --abbrev-ref HEAD)"
+readonly DEFAULT_BRANCH_NAME="$(git_config fork.default-branch master)"
+readonly DEFAULT_BRANCH_REMOTE="$(git_config branch.${DEFAULT_BRANCH_NAME}.remote origin)"
+readonly ORIGIN_REMOTE="$(git_config fork.origin-remote origin)"
+readonly UPSTREAM_REMOTE="$(git_config fork.upstream-remote upstream)"
+
+fork_settings() {
+    echo "START_BRANCH_NAME     = ${START_BRANCH_NAME}"
+    echo "DEFAULT_BRANCH_NAME   = ${DEFAULT_BRANCH_NAME}"
+    echo "DEFAULT_BRANCH_REMOTE = ${DEFAULT_BRANCH_REMOTE}"
+    echo "ORIGIN_REMOTE         = ${ORIGIN_REMOTE}"
+    echo "UPSTREAM_REMOTE       = ${UPSTREAM_REMOTE}"
+}
+
+fork_sync() {
+    trap "git checkout --quiet ${START_BRANCH_NAME}" EXIT SIGINT SIGTERM
+
+    git checkout --quiet --detach HEAD
+    git fetch "${UPSTREAM_REMOTE}" "${DEFAULT_BRANCH_NAME}:${DEFAULT_BRANCH_NAME}"
+    git checkout --quiet "${START_BRANCH_NAME}"
+    git push "${ORIGIN_REMOTE}" "${DEFAULT_BRANCH_NAME}"
+}
+
+usage() {
+    >&2 echo "Usage: git-fork [sync|settings]"
+}
+
+main() {
+    local cmd="$1"
+    if [ "${cmd}" = "sync" ]; then
+        fork_sync
+    elif [ "$cmd" = "settings" ]; then
+        fork_settings
+    else
+        usage
+        exit 1
+    fi
+}
+
+main $@
