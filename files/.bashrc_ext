@@ -26,8 +26,10 @@ HISTCONTROL=ignoreboth
 HISTIGNORE='ls:bg:fg:history'
 PROMPT_COMMAND='history -a'
 
-if which hh > /dev/null; then
-    if [[ $- =~ .*i.* ]]; then
+if [[ $- =~ .*i.* ]]; then
+    if which hist-find > /dev/null; then
+         bind '"\C-r": "\C-a hist-find -- \C-j"'
+    elif which hh > /dev/null; then
         bind '"\C-r": "\C-a hh -- \C-j"'
     fi
 fi
