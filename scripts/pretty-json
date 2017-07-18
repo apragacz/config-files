@@ -1,2 +1,25 @@
-#!/bin/bash
-python -c "import json; import sys; print json.dumps(json.loads(sys.stdin.read()), sort_keys = True, indent = 2)"
+#!/usr/bin/env python
+from __future__ import print_function
+import argparse
+import json
+import sys
+
+
+def dump_json(f):
+    data = json.loads(f.read())
+    print(json.dumps(data, sort_keys=True, indent=2))
+
+
+def main():
+    parser = argparse.ArgumentParser(prog='pretty-json')
+    parser.add_argument('input', nargs='?', default='-')
+    args = parser.parse_args()
+    if args.input == '-':
+        dump_json(sys.stdin)
+    else:
+        with open(args.input, 'r') as f:
+            dump_json(f)
+
+
+if __name__ == '__main__':
+    main()
