@@ -1,12 +1,17 @@
 {
-    "typescript.check.npmIsInstalled": false,
-    "workbench.colorTheme": "Monokai",
+    "editor.cursorBlinking": "solid",
+    "editor.cursorStyle": "line",
     "editor.fontFamily": "'Monospace', 'Courier New', 'Droid Sans Fallback'",
+    "editor.fontSize": 12,
+    "editor.renderWhitespace": "none",
     "editor.rulers": [
         79,
         120
     ],
     "editor.wordWrap": "off",
-    "editor.cursorBlinking": "solid",
-    "editor.cursorStyle": "line"
+    "files.insertFinalNewline": true,
+    "files.trimTrailingWhitespace": true,
+    "git.ignoreLegacyWarning": true,
+    "typescript.check.npmIsInstalled": false,
+    "workbench.colorTheme": "Monokai"
 }
