@@ -1,0 +1,12 @@
+{
+    "typescript.check.npmIsInstalled": false,
+    "workbench.colorTheme": "Monokai",
+    "editor.fontFamily": "'Monospace', 'Courier New', 'Droid Sans Fallback'",
+    "editor.rulers": [
+        79,
+        120
+    ],
+    "editor.wordWrap": "off",
+    "editor.cursorBlinking": "solid",
+    "editor.cursorStyle": "line"
+}
