@@ -9,9 +9,21 @@
         120
     ],
     "editor.wordWrap": "off",
+    "extensions.ignoreRecommendations": false,
+    "files.exclude": {
+        "**/.git": true,
+        "**/.svn": true,
+        "**/.hg": true,
+        "**/CVS": true,
+        "**/.DS_Store": true,
+        "**/__pycache__": true,
+        "**/*.pyc": true
+    },
     "files.insertFinalNewline": true,
     "files.trimTrailingWhitespace": true,
     "git.ignoreLegacyWarning": true,
+    "python.linting.flake8Enabled": true,
     "typescript.check.npmIsInstalled": false,
+    "window.title": "${dirty}${activeEditorMedium}${separator}${rootName}${separator}${appName}",
     "workbench.colorTheme": "Monokai"
 }
