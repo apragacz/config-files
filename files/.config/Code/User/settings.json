@@ -21,9 +21,13 @@
     },
     "files.insertFinalNewline": true,
     "files.trimTrailingWhitespace": true,
+    "gitlens.advanced.telemetry.enabled": false,
     "gitlens.blame.line.annotationType": "hover",
     "gitlens.codeLens.enabled": false,
     "python.linting.flake8Enabled": true,
+    "sqltools.telemetry": false,
+    "telemetry.enableCrashReporter": false,
+    "telemetry.enableTelemetry": false,
     "typescript.check.npmIsInstalled": false,
     "window.title": "${dirty}${activeEditorMedium}${separator}${rootName}${separator}${appName}",
     "workbench.colorTheme": "Monokai"
