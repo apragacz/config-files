@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import os
 
-from installhelpers.base import Installation
+from installhelpers.installation import Installation
 from installhelpers import (
     bash,
     git,
@@ -19,10 +19,10 @@ def main():
     )
     modules = [bash, git, tmux, vim, python_cli_tools]
     for module in modules:
-        ask_for_params = getattr(module, 'ask_for_params', None)
-        if not ask_for_params:
-            continue
-        ask_for_params(installation)
+        installation.prepare_with_module(module)
+
+    installation.set_up()
+
     for module in modules:
         module.configure(installation)
 

@@ -25,7 +25,7 @@ def install_package_control():
     ipp = INSTALLED_PACKAGES_DIRPATH
     os.makedirs(ipp) if not os.path.exists(ipp) else None
     urllib2.install_opener(urllib2.build_opener(urllib2.ProxyHandler()))
-    package_url = 'http://sublime.wbond.net/' + pf.replace(' ','%20')
+    package_url = 'http://sublime.wbond.net/' + pf.replace(' ', '%20')
     url_f = None
     package_path = pjoin(ipp, pf)
     if not os.path.exists(package_path):
@@ -57,12 +57,14 @@ def install_package(package_name, package_repo_url, pc_settings):
             subprocess.check_output(['git', 'clone',
                                     package_repo_url, package_name])
         else:
-            print_info(u'Package {} seems to be installed'.format(package_name))
+            print_info(u'Package {package_name} seems to be installed'.format(
+                package_name=package_name))
         pc_settings.setdefault('installed_packages', [])
         if package_name not in pc_settings['installed_packages']:
             pc_settings['installed_packages'].append(package_name)
     finally:
         os.chdir(working_dir)
+
 
 def install_packages():
     print_step(u'Installing Sublime Text 2 packages')
@@ -81,7 +83,6 @@ def copy_config_files():
         print_info(u'Copying {}'.format(filename))
         shutil.copyfile(pjoin(src_dirname, filename),
                         pjoin(PACKAGES_USER_DIRPATH, filename))
-    pass
 
 
 def configure():
