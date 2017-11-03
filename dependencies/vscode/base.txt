@@ -1,0 +1,4 @@
+EditorConfig.EditorConfig
+donjayamanne.python
+eamodio.gitlens
+timonwong.shellcheck
