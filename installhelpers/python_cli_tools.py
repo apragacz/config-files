@@ -1,11 +1,24 @@
 from __future__ import print_function, unicode_literals, division
 import os
 
-from .base import print_step
+from .base import print_info, print_step
 
 
 def configure(installation):
     print_step('Installing Python CLI tools')
-    reqs_path = os.path.join(installation.repo_path, 'pip-packages',
-                             'general-cli-tools.txt')
-    os.system('pip install --user -r {reqs_path}'.format(reqs_path=reqs_path))
+    print_info('Installing pipsi')
+    os.system('curl https://raw.githubusercontent.com/mitsuhiko/pipsi/master/get-pipsi.py | python')
+    reqs_path = os.path.join(
+        installation.repo_path, 'dependencies', 'pipsi', 'base.txt')
+    with open(reqs_path, 'rt') as f:
+        for line in f:
+            line = line.strip()
+            if not line:
+                continue
+            if line.startswith('#'):
+                continue
+            package_name = line
+            print_info('Installing {package_name} via pipsi'.format(
+                package_name=package_name))
+            os.system('pipsi install {package_name}'.format(
+                package_name=package_name))

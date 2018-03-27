@@ -1,7 +1,0 @@
-ipython==5.3.0
-stormssh
-shyaml
-docker-compose
-trypackage
-doitlive
-git+git://github.com/szopu/git-jira-worklog.git
