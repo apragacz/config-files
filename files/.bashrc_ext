@@ -1,32 +1,50 @@
+#!/bin/bash
+
 parse_git_branch() {
      git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/ (\1)/'
 }
 
+#
+# Bash PATH setup
+#
 PATH="$PATH:$HOME/.local/bin"
 PATH="$PATH:$HOME/config-files/scripts"
 export PATH
 
-# eval is for additional checking that parse_git_branch exists in given context
+#
+# Bash prompt setup
+#
 if [ "$(id -u)" = "0" ]; then
+    # `eval` is for additional checking that `parse_git_branch` exists in given context.
     PS1='${debian_chroot:+($debian_chroot)}\[\033[01;31m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[33m\]$(eval "parse_git_branch" 2> /dev/null)\[\033[00m\]\n\$ '
 else
+    # The main difference is that we are using red color instead of green here.
     PS1='${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[33m\]$(eval "parse_git_branch" 2> /dev/null)\[\033[00m\]\n\$ '
 fi
 
 if which vim > /dev/null; then
-    EDITOR="vim"
-    export EDITOR
+    export EDITOR="vim"
 fi
 
-HHCONFIG=hicolor
+#
+# Aliases
+#
+alias cwd-reattach='cd "$(pwd)"'
+
+#
+# Bash history setup
+#
+export HHCONFIG=hicolor
 shopt -s histappend
-HISTFILESIZE=1000000
-HISTSIZE=1000000
-HISTCONTROL=ignoreboth
-HISTIGNORE='ls:bg:fg:history'
-PROMPT_COMMAND='history -a'
+export HISTFILESIZE=100000
+export HISTSIZE=100000
+export HISTFILE=~/.bash_history
+export HISTCONTROL=ignoreboth
+export HISTIGNORE='ls:bg:fg:history:pwd:ll'
+PROMPT_COMMAND='history -a ; history -c ; history -r; $PROMPT_COMMAND'
 
 if [[ $- =~ .*i.* ]]; then
+    # Use hist-find for reverse history search; if not found, fallback to hh if it is found.
     if which hist-find > /dev/null; then
          bind '"\C-r": "\C-a hist-find -- \C-j"'
     elif which hh > /dev/null; then
