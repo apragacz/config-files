@@ -30,5 +30,6 @@
     "telemetry.enableTelemetry": false,
     "typescript.check.npmIsInstalled": false,
     "window.title": "${dirty}${activeEditorMedium}${separator}${rootName}${separator}${appName}",
-    "workbench.colorTheme": "Monokai"
+    "workbench.colorTheme": "Monokai",
+    "gitlens.keymap": "alternate"
 }

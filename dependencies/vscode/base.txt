@@ -1,4 +1,8 @@
-EditorConfig.EditorConfig
-donjayamanne.python
 eamodio.gitlens
+EditorConfig.EditorConfig
+jebbs.plantuml
+mikestead.dotenv
+ms-vscode.cpptools
+ms-python.python
+PeterJausovec.vscode-docker
 timonwong.shellcheck
