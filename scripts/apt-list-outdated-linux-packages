@@ -1,0 +1,187 @@
+#!/usr/bin/env python
+import platform
+import re
+import subprocess
+from collections import namedtuple
+from pprint import pprint
+
+DPKGInfo = namedtuple('DPKGInfo', [
+    'install_flag',
+    'full_name',
+    'full_version',
+    'platform',
+    'description',
+])
+
+_LinuxVersion = namedtuple('LinuxVersion', [
+    'major',
+    'minor',
+    'maintenance',
+    'build',
+    'modifier',
+])
+
+_LinuxPackageInfo = namedtuple('LinuxPackageInfo', [
+    'name',
+    'version',
+])
+
+
+class LinuxVersion(_LinuxVersion):
+
+    def __new__(cls, major, minor, maintenance, build, modifier=None):
+        return super(LinuxVersion, cls).__new__(
+            cls, major=int(major), minor=int(minor),
+            maintenance=int(maintenance),
+            build=int(build), modifier=modifier,
+        )
+
+    @property
+    def base(self):
+        fmt = '{self.major}.{self.minor}.{self.maintenance}-{self.build}'
+        return fmt.format(self=self)
+
+    def __str__(self):
+        if self.modifier:
+            return '{self.base}-{self.modifier}'.format(self=self)
+        else:
+            return '{self.base}'.format(self=self)
+
+
+class LinuxPackageInfo(_LinuxPackageInfo):
+
+    def __str__(self):
+        return '{self.name}-{self.version}'.format(self=self)
+
+
+def _build_version_pattern():
+    pat = ''
+
+    pat += '(?P<version_major>[0-9]+)'
+    pat += '.'
+    pat += '(?P<version_minor>[0-9]+)'
+    pat += '.'
+    pat += '(?P<version_maintenance>[0-9]+)'
+    pat += '-'
+    pat += '(?P<version_build>[0-9]+)'
+
+    pat += '(?:'
+
+    pat += '-'
+    pat += '(?P<version_modifier>.+)'
+
+    pat += ')?'
+
+    return pat
+
+
+def _build_linux_full_package_name_pattern(package_names):
+    pat = ''
+
+    pat += '(?P<name>'
+    pat += '|'.join(re.escape(pkg_name) for pkg_name in package_names)
+    pat += ')'
+
+    pat += '-'
+
+    pat += _build_version_pattern()
+
+    return pat
+
+
+def _get_version_data(data):
+    version_data = {}
+    version_prefix = 'version_'
+    version_keys = {k for k in data if k.startswith(version_prefix)}
+    version_data = {
+        k[len(version_prefix):]: v for k, v in data.items()
+        if k in version_keys
+    }
+    return version_data
+
+
+def _remove_version_modifier(version):
+    params = list(version)
+    params[4] = None
+    return LinuxVersion(*params)
+
+
+def _parse_linux_package_info(dpkg_info, linux_package_name_regex):
+    if dpkg_info.install_flag != 'ii':
+        raise ValueError()
+    m = linux_package_name_regex.match(dpkg_info.full_name)
+    if not m:
+        raise ValueError()
+
+    data = m.groupdict()
+    name = data['name']
+    version_data = _get_version_data(data)
+    version = LinuxVersion(**version_data)
+
+    return LinuxPackageInfo(name=name, version=version)
+
+
+def _parse_linux_version(version_string):
+    pat = _build_version_pattern()
+    regex = re.compile('^' + pat + '$')
+    m = regex.match(version_string)
+    if not m:
+        raise ValueError()
+    data = m.groupdict()
+    version_data = _get_version_data(data)
+    return LinuxVersion(**version_data)
+
+
+def _parse_dpkg_info(out_line):
+    line_split = out_line.split(None, 4)
+    if len(line_split) != 5:
+        raise ValueError()
+    return DPKGInfo(*line_split)
+
+
+def parse_dpkg_output(out):
+    for line in out.split('\n'):
+        try:
+            dpkg_info = _parse_dpkg_info(line)
+        except ValueError:
+            continue
+        yield dpkg_info
+
+
+def filter_linux_packages(dpgk_infos, package_names):
+    pat = _build_linux_full_package_name_pattern(package_names)
+    regex = re.compile('^' + pat + '$')
+    for dpgk_info in dpgk_infos:
+        try:
+            linux_pkg_info = _parse_linux_package_info(dpgk_info, regex)
+        except ValueError:
+            continue
+        yield linux_pkg_info
+
+
+def main():
+    out = subprocess.check_output(['dpkg', '-l'])
+    package_names = ['linux-image', 'linux-image-extra', 'linux-headers']
+    packages = list(
+        filter_linux_packages(
+            parse_dpkg_output(out),
+            package_names,
+        )
+    )
+    current_linux_version = _parse_linux_version(platform.uname()[2])
+    all_versions = sorted({
+        _remove_version_modifier(pkg.version) for pkg in packages})
+    versions_without_current = [
+        v for v in all_versions if v.base != current_linux_version.base]
+    versions_allowed_to_remove = versions_without_current[:-1]
+    version_bases_allowed_to_remove = [
+        v.base for v in versions_allowed_to_remove]
+    packages_allowed_to_remove = [
+        pkg for pkg in packages
+        if pkg.version.base in version_bases_allowed_to_remove]
+    for pkg in packages_allowed_to_remove:
+        print(pkg)
+
+
+if __name__ == '__main__':
+    main()
