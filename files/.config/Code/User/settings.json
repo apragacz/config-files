@@ -21,18 +21,30 @@
     },
     "files.insertFinalNewline": true,
     "files.trimTrailingWhitespace": true,
+    "gitlens.advanced.messages": {
+        "suppressShowKeyBindingsNotice": true
+    },
     "gitlens.advanced.telemetry.enabled": false,
-    "gitlens.blame.line.annotationType": "hover",
     "gitlens.codeLens.enabled": false,
+    "gitlens.historyExplorer.enabled": true,
+    "gitlens.keymap": "chorded",
     "python.linting.flake8Enabled": true,
+    "solidity.soliumRules": {
+        "imports-on-top": 0,
+        "variable-declarations": 0,
+        "indentation": [
+            "error",
+            4
+        ],
+        "quotes": [
+            "error",
+            "double"
+        ]
+    },
     "sqltools.telemetry": false,
     "telemetry.enableCrashReporter": false,
     "telemetry.enableTelemetry": false,
     "typescript.check.npmIsInstalled": false,
     "window.title": "${dirty}${activeEditorMedium}${separator}${rootName}${separator}${appName}",
     "workbench.colorTheme": "Monokai",
-    "gitlens.keymap": "chorded",
-    "gitlens.advanced.messages": {
-        "suppressShowKeyBindingsNotice": true
-    }
 }
