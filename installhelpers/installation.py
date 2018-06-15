@@ -52,14 +52,16 @@ class Installation(object):
     def prepare_with_module(self, module):
         prepare = getattr(module, 'prepare', None)
         if not prepare:
-            return
-        prepare(self)  # pylint: disable=E1102
+            return True
+        result = prepare(self)  # pylint: disable=E1102
 
         configure = getattr(module, 'configure', None)
         if configure is None:
             raise AttributeError(
                 'No configure function in module {module!r}'.format(
                     module=module))
+
+        return not (result is False)
 
     def require_params(self, param_names):
         self._required_param_names.update(param_names)

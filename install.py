@@ -27,12 +27,15 @@ def main():
         homedir_path,
         os.path.join(homedir_path, 'config-files'),
     )
+    modules_to_configure = []
     for module in MODULES:
-        installation.prepare_with_module(module)
+        if not installation.prepare_with_module(module):
+            continue
+        modules_to_configure.append(module)
 
     installation.set_up()
 
-    for module in MODULES:
+    for module in modules_to_configure:
         module.configure(installation)
 
     installation.tear_down()
