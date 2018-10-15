@@ -47,4 +47,6 @@
     "typescript.check.npmIsInstalled": false,
     "window.title": "${dirty}${activeEditorMedium}${separator}${rootName}${separator}${appName}",
     "workbench.colorTheme": "Monokai",
+    "breadcrumbs.enabled": true,
+    "workbench.editor.enablePreviewFromQuickOpen": false,
 }
