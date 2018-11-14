@@ -49,4 +49,5 @@
     "workbench.colorTheme": "Monokai",
     "breadcrumbs.enabled": true,
     "workbench.editor.enablePreviewFromQuickOpen": false,
+    "window.titleBarStyle": "custom",
 }
