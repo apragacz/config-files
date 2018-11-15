@@ -1,4 +1,5 @@
 {
+    "breadcrumbs.enabled": true,
     "editor.cursorBlinking": "solid",
     "editor.cursorStyle": "line",
     "editor.fontFamily": "'Monospace', 'Courier New', 'Droid Sans Fallback'",
@@ -28,6 +29,7 @@
     "gitlens.codeLens.enabled": false,
     "gitlens.historyExplorer.enabled": true,
     "gitlens.keymap": "chorded",
+    "python.jediEnabled": false,
     "python.linting.flake8Enabled": true,
     "solidity.soliumRules": {
         "imports-on-top": 0,
@@ -46,8 +48,7 @@
     "telemetry.enableTelemetry": false,
     "typescript.check.npmIsInstalled": false,
     "window.title": "${dirty}${activeEditorMedium}${separator}${rootName}${separator}${appName}",
-    "workbench.colorTheme": "Monokai",
-    "breadcrumbs.enabled": true,
-    "workbench.editor.enablePreviewFromQuickOpen": false,
     "window.titleBarStyle": "custom",
+    "workbench.colorTheme": "Monokai",
+    "workbench.editor.enablePreviewFromQuickOpen": false,
 }
