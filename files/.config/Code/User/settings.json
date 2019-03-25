@@ -29,6 +29,8 @@
     "gitlens.codeLens.enabled": false,
     "gitlens.historyExplorer.enabled": true,
     "gitlens.keymap": "chorded",
+    "gitlens.views.fileHistory.enabled": true,
+    "gitlens.views.lineHistory.enabled": true,
     "python.jediEnabled": false,
     "python.linting.flake8Enabled": true,
     "solidity.soliumRules": {
@@ -49,6 +51,7 @@
     "typescript.check.npmIsInstalled": false,
     "window.title": "${dirty}${activeEditorMedium}${separator}${rootName}${separator}${appName}",
     "window.titleBarStyle": "custom",
+    "window.zoomLevel": 0,
     "workbench.colorTheme": "Monokai",
     "workbench.editor.enablePreviewFromQuickOpen": false,
 }
