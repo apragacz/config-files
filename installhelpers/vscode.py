@@ -28,7 +28,7 @@ def configure(installation):
 def prepare(installation):
     print_step('Preparing VS Code configuration')
     try:
-        result = subprocess.check_output(['/usr/bin/env', 'which', 'code'])
+        subprocess.check_output(['/usr/bin/env', 'which', 'code'])
     except subprocess.CalledProcessError:
         print_info('Code executable not found, ommitting')
         return False
