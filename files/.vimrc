@@ -11,6 +11,8 @@ set mouse=a
 set virtualedit=onemore
 set history=1000
 set cursorline
+set guicursor=
+autocmd OptionSet guicursor noautocmd set guicursor=
 if has('cmdline_info')
     set ruler
     set rulerformat=%30(%=\:b%n%y%m%r%w\ %l,%c%V\ %P%)
