@@ -8,4 +8,5 @@ flake8
 pylint
 tmuxp
 tmuxp-combine
-git+git://github.com/szopu/git-jira-worklog.git#egg=git-jira-worklog
+git+git://github.com/apragacz/git-jira-worklog.git#egg=git-jira-worklog
+git+git://github.com/apragacz/hist-db.git#egg=hist-db
