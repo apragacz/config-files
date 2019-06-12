@@ -2,7 +2,7 @@
     "breadcrumbs.enabled": true,
     "editor.cursorBlinking": "solid",
     "editor.cursorStyle": "line",
-    "editor.fontFamily": "'Monospace', 'Courier New', 'Droid Sans Fallback'",
+    "editor.fontFamily": "Menlo, Monaco, 'Monospace', 'Courier New', 'Droid Sans Fallback'",
     "editor.fontSize": 12,
     "editor.renderWhitespace": "none",
     "editor.rulers": [
