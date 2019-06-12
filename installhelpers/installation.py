@@ -2,8 +2,16 @@ from __future__ import print_function, unicode_literals, division
 import datetime
 import json
 import os
+import platform
 
 import six.moves
+
+
+PATH_OS_REMAPS = {
+    'darwin': {
+        '.config/Code': 'Library/Application Support/Code'
+    }
+}
 
 
 class Installation(object):
@@ -19,12 +27,35 @@ class Installation(object):
         self._params.update(params)
 
     @property
+    def os_name(self):
+        return platform.system().lower()
+
+    @property
+    def path_sep(self):
+        return os.path.sep
+
+    @property
     def files_path(self):
         return os.path.join(self.repo_path, 'files')
 
     @property
     def params_path(self):
         return os.path.join(self.repo_path, '.params.json')
+
+    def remap_home_path(self, local_path):
+        sep = self.path_sep
+        path = local_path
+        path_remaps = PATH_OS_REMAPS.get(self.os_name, {})
+        for src_prefix, dst_prefix in path_remaps.items():
+            if not src_prefix.endswith(sep) and not dst_prefix.endswith(sep):
+                src_prefix += sep
+                dst_prefix += sep
+            if path.startswith(src_prefix):
+                path = dst_prefix + path[len(src_prefix):]
+        return path
+
+    def get_home_abspath(self, local_path):
+        return os.path.join(self.home_path, self.remap_home_path(local_path))
 
     def _load_saved_params(self):
         try:

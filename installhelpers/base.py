@@ -44,7 +44,12 @@ def save_json_config(filepath, config):
 
 
 def ensure_dirpath_created(dirpath):
+    logger.info("Ensuring that path {dirpath!r} is created".format(
+        dirpath=dirpath))
     if not (os.path.exists(dirpath) and os.path.isdir(dirpath)):
+        logger.debug(
+            "Directory path {dirpath!r} does not exist,"
+            " creating required directories".format(dirpath=dirpath))
         os.makedirs(dirpath)
 
 
@@ -56,13 +61,18 @@ def chdir(dir_path):
     os.chdir(olddir_path)
 
 
+def ensure_home_dirpath_created(installation, local_path):
+    ensure_dirpath_created(installation.get_home_abspath(local_path))
+
+
 def create_config_symlink(installation, config_local_path):
+    home_config_local_path = installation.remap_home_path(config_local_path)
     with chdir(installation.home_path):
-        if os.path.exists(config_local_path):
+        if os.path.exists(home_config_local_path):
             backup(installation, config_local_path, will_be_replaced=True)
         os.symlink(
             os.path.join(installation.files_path, config_local_path),
-            config_local_path,
+            home_config_local_path,
         )
         return True
 
@@ -73,7 +83,7 @@ def copy_config_template(installation, config_local_path, param_names=None,
         param_names = []
     cfg_template_path = os.path.join(installation.files_path,
                                      config_local_path + '.j2')
-    cfg_path = os.path.join(installation.home_path, config_local_path)
+    cfg_path = installation.get_home_abspath(config_local_path)
     with open(cfg_template_path, 'rt') as f:
         cfg_template = jinja2.Template(f.read())
     template_params = {}
@@ -101,7 +111,7 @@ def append_config_line(installation, config_local_path, config_line,
     if '\n' in config_line:
         raise ValueError('Newline found in {config_line!r}'.format(
             config_line=config_line))
-    cfg_path = os.path.join(installation.home_path, config_local_path)
+    cfg_path = installation.get_home_abspath(config_local_path)
     if os.path.exists(cfg_path):
         with open(cfg_path, 'rt') as f:
             cfg_lines = [line.strip() for line in f]

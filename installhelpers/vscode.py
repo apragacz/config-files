@@ -3,7 +3,7 @@ import os
 import subprocess
 
 from .base import (
-    create_config_symlink, print_info, print_step,
+    create_config_symlink, ensure_home_dirpath_created, print_info, print_step,
     yield_valid_lines_from_filename)
 
 
@@ -21,6 +21,7 @@ def install_extensions(installation):
 
 def configure(installation):
     print_step('Configuring VS Code')
+    ensure_home_dirpath_created(installation, '.config/Code/User')
     create_config_symlink(installation, '.config/Code/User/settings.json')
     install_extensions(installation)
 
