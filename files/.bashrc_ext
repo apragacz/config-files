@@ -8,6 +8,12 @@ parse_git_branch() {
 # Bash PATH setup
 #
 PATH="$PATH:$HOME/.local/bin"
+
+# Additional Python path for Mac OS:
+if [ -d "$HOME/Library/Python/2.7/bin" ]; then
+    PATH="$PATH:$HOME/Library/Python/2.7/bin"
+fi
+
 PATH="$PATH:$HOME/config-files/scripts"
 export PATH
 
@@ -29,6 +35,8 @@ fi
 #
 # Aliases
 #
+alias ll='ls -l'
+alias la='ls -la'
 alias cwd-reattach='cd "$(pwd)"'
 
 #
