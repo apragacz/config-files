@@ -69,7 +69,7 @@ def create_config_symlink(installation, config_local_path):
     home_config_local_path = installation.remap_home_path(config_local_path)
     with chdir(installation.home_path):
         if os.path.exists(home_config_local_path):
-            backup(installation, config_local_path, will_be_replaced=True)
+            backup(installation, home_config_local_path, will_be_replaced=True)
         os.symlink(
             os.path.join(installation.files_path, config_local_path),
             home_config_local_path,
