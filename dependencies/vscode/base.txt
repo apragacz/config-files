@@ -2,7 +2,8 @@ eamodio.gitlens
 EditorConfig.EditorConfig
 jebbs.plantuml
 mikestead.dotenv
+ms-azuretools.vscode-docker
 ms-vscode.cpptools
+ms-vscode.go
 ms-python.python
-PeterJausovec.vscode-docker
 timonwong.shellcheck
