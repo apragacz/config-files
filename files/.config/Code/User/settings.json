@@ -3,10 +3,11 @@
     "editor.cursorBlinking": "solid",
     "editor.cursorStyle": "line",
     "editor.fontFamily": "Menlo, Monaco, 'Monospace', 'Courier New', 'Droid Sans Fallback'",
-    "editor.fontSize": 12,
     "editor.renderWhitespace": "none",
     "editor.rulers": [
         79,
+        88,
+        100,
         120
     ],
     "editor.wordWrap": "off",
@@ -17,23 +18,49 @@
         "**/.hg": true,
         "**/CVS": true,
         "**/.DS_Store": true,
+        "**/node_modules/**": true,
         "**/__pycache__": true,
-        "**/*.pyc": true
+        "**/*.pyc": true,
+        "**/.pytest_cache/": true,
+        "**/.mypy_cache/": true,
+        "**/env/**": true,
+        "**/venv/**": true,
+        "**/.env/**": true,
+        "**/.venv/**": true
     },
     "files.insertFinalNewline": true,
     "files.trimTrailingWhitespace": true,
-    "gitlens.advanced.messages": {
-        "suppressShowKeyBindingsNotice": true
+    "files.watcherExclude": {
+        "**/.git/objects/**": true,
+        "**/.git/subtree-cache/**": true,
+        "**/node_modules/**": true,
+        "**/bower_components": true,
+        "**/.pytest_cache/": true,
+        "**/.mypy_cache/": true,
+        "**/env/**": true,
+        "**/venv/**": true,
+        "**/.env/**": true,
+        "**/.venv/**": true,
+        "env-*": true
     },
     "gitlens.advanced.telemetry.enabled": false,
     "gitlens.codeLens.enabled": false,
     "gitlens.keymap": "chorded",
     "gitlens.views.fileHistory.enabled": true,
-    "gitlens.views.lineHistory.enabled": true,
     "go.formatTool": "goimports",
     "go.useLanguageServer": true,
     "python.jediEnabled": false,
     "python.linting.flake8Enabled": true,
+    "search.exclude": {
+        "**/node_modules": true,
+        "**/bower_components": true,
+        "**/.pytest_cache/": true,
+        "**/.mypy_cache/": true,
+        "**/env": true,
+        "**/venv": true,
+        "**/.env/**": true,
+        "**/.venv/**": true
+    },
     "shellcheck.customArgs": ["-x"],
     "solidity.soliumRules": {
         "imports-on-top": 0,
@@ -50,11 +77,77 @@
     "sqltools.telemetry": false,
     "telemetry.enableCrashReporter": false,
     "telemetry.enableTelemetry": false,
+    "terraform.languageServer": {
+        "external": true,
+        "args": [
+          "serve"
+        ]
+      },
     "typescript.check.npmIsInstalled": false,
-    "vsnotes.defaultNotePath": "~/notes",
+    "vsnotes.defaultNotePath": "~/notes/",
+    "vsnotes.defaultNoteTitle": "{monthdir}/{yeardate}_{title}.{ext}",
+    "vsnotes.tokens": [
+        {
+            "type": "datetime",
+            "token": "{datedir}",
+            "format": "YYYY/MM/DD",
+            "description": "Insert formatted datetime."
+        },
+        {
+            "type": "datetime",
+            "token": "{monthdir}",
+            "format": "YYYY/MM",
+            "description": "Insert formatted datetime."
+        },
+        {
+            "type": "datetime",
+            "token": "{dt}",
+            "format": "YYYY-MM-DD_HH-mm",
+            "description": "Insert formatted datetime."
+        },
+        {
+            "type": "datetime",
+            "token": "{date}",
+            "format": "YYYY-MM-DD",
+            "description": "Insert formatted datetime."
+        },
+        {
+            "type": "datetime",
+            "token": "{yeardate}",
+            "format": "MM-DD",
+            "description": "Insert formatted datetime."
+        },
+        {
+            "type": "title",
+            "token": "{title}",
+            "description": "Insert note title from input box.",
+            "format": "Untitled"
+        },
+        {
+            "type": "extension",
+            "token": "{ext}",
+            "description": "Insert file vsnotes.",
+            "format": "md"
+        }
+    ],
     "window.title": "${dirty}${activeEditorMedium}${separator}${rootName}${separator}${appName}",
     "window.titleBarStyle": "custom",
-    "window.zoomLevel": 0,
     "workbench.colorTheme": "Monokai",
     "workbench.editor.enablePreviewFromQuickOpen": false,
+    "python.languageServer": "Pylance",
+    "editor.suggestSelection": "first",
+    "vsintellicode.modify.editor.suggestSelection": "automaticallyOverrodeDefaultValue",
+    "workbench.editorAssociations": {
+        "*.ipynb": "jupyter-notebook"
+    },
+    "rust.clippy_preference": "on",
+    "[rust]": {
+        "editor.defaultFormatter": "rust-lang.rust"
+    },
+    "workbench.startupEditor": "none",
+    "go.toolsManagement.autoUpdate": true,
+    "notebook.cellToolbarLocation": {
+        "default": "right",
+        "jupyter-notebook": "left"
+    },
 }
