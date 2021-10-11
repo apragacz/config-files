@@ -1,9 +1,5 @@
 #!/bin/bash
 
-parse_git_branch() {
-     git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/ (\1)/'
-}
-
 #
 # Bash PATH setup
 #
@@ -19,16 +15,67 @@ export PATH
 
 #
 # Bash prompt setup
-#
-if [ "$(id -u)" = "0" ]; then
-    # `eval` is for additional checking that `parse_git_branch` exists in given context.
-    PS1='${debian_chroot:+($debian_chroot)}\[\033[01;31m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[33m\]$(eval "parse_git_branch" 2> /dev/null)\[\033[00m\]\n\$ '
-else
-    # The main difference is that we are using red color instead of green here.
-    PS1='${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[33m\]$(eval "parse_git_branch" 2> /dev/null)\[\033[00m\]\n\$ '
-fi
+parse_git_branch() {
+    git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/ (git \1)/'
+}
 
-if which vim > /dev/null; then
+parse_kubectl_context() {
+    local k8s_ctx
+    k8s_ctx="$(kubectl config current-context)"
+    if [ -n "$k8s_ctx" ]; then
+        echo "[k8s $k8s_ctx] "
+    fi
+}
+
+build_prompt () {
+    local prompt=''
+    local kube_ctx_in_prompt
+    local git_branch_in_prompt
+
+    kube_ctx_in_prompt=${BASH_PROMPT_KUBERNETES_CONTEXT:-yes}
+    git_branch_in_prompt=${BASH_PROMPT_GIT_BRANCH:-yes}
+
+    if [ "$kube_ctx_in_prompt" == "yes" ] && command -v kubectl > /dev/null; then
+        prompt+='$(eval "parse_kubectl_context" 2> /dev/null)'
+    fi
+
+    prompt+='${debian_chroot:+($debian_chroot)}'
+
+    # user and hostname
+    if [ "$(id -u)" = "0" ]; then
+        prompt+='\[\033[01;31m\]'
+    else
+        prompt+='\[\033[01;32m\]'
+    fi
+    prompt+='\u@\h'
+
+    # separator
+    prompt+='\[\033[00m\]:'
+
+    # working directory
+    prompt+='\[\033[01;34m\]\w'
+
+    if [ "$git_branch_in_prompt" = "yes" ] && command -v git > /dev/null; then
+        prompt+='\[\033[33m\]$(eval "parse_git_branch" 2> /dev/null)'
+    fi
+    prompt+='\[\033[00m\]\n'
+    if [ "$(id -u)" = "0" ]; then
+        prompt+='#'
+    else
+        prompt+='\$'
+    fi
+    prompt+=' '
+
+    echo "$prompt"
+}
+
+reload_prompt() {
+    PS1="$(build_prompt)"
+}
+
+PS1="$(build_prompt)"
+
+if command -v vim > /dev/null; then
     export EDITOR="vim"
 fi
 
