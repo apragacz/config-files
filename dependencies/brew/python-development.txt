@@ -1,0 +1,8 @@
+openssl
+readline
+sqlite3
+xz
+zlib
+python
+python@2
+pyenv

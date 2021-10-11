@@ -1,0 +1,5 @@
+kubernetes-cli
+kubernetes-helm
+kubectx
+stern
+telepresence

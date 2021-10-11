@@ -1,0 +1,7 @@
+htop
+tmux
+wget
+jq
+git
+git-lfs
+zaquestion/tap/lab

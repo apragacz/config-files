@@ -1,0 +1,5 @@
+keepassx
+firefox
+iterm2
+spectacle
+karabiner-elements
