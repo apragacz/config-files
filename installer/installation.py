@@ -1,10 +1,7 @@
-from __future__ import print_function, unicode_literals, division
 import datetime
 import json
 import os
 import platform
-
-import six.moves
 
 
 PATH_OS_REMAPS = {
@@ -107,7 +104,7 @@ class Installation(object):
             while value == '':
                 saved_value = saved_params.get(name)
                 prompt = self._get_input_prompt(name, saved_value=saved_value)
-                value = six.moves.input(prompt)
+                value = input(prompt)
                 if not value and saved_value is not None:
                     value = saved_value
             self._params[name] = value
@@ -118,7 +115,7 @@ class Installation(object):
         for name in required_names:
             value = self._params[name]
             print("  {name}: {value}".format(name=name, value=value))
-        confirm = six.moves.input("Are these ok? [y/N]: ")
+        confirm = input("Are these ok? [y/N]: ")
         if confirm.lower() != 'y':
             raise KeyboardInterrupt()
 
@@ -129,6 +126,7 @@ class Installation(object):
         return self._params
 
     def set_up(self):
+        print(vars(self))
         self._ask_for_params()
         self._confirm_params()
 

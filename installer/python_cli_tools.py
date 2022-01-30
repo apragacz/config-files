@@ -6,14 +6,18 @@ from .base import print_info, print_step
 
 def configure(installation):
     print_step('Installing Python CLI tools')
-    print_info('Installing pipsi')
-    os.system('curl -O https://raw.githubusercontent.com/mitsuhiko/pipsi/master/get-pipsi.py')  # noqa: E501
-    os.system('python get-pipsi.py --src=git+https://github.com/mitsuhiko/pipsi.git')  # noqa: E501
-    os.system('rm get-pipsi.py')
+    print_info('Installing pipx')
+    if installation.os_name == 'darwin':
+        os.system('brew install pipx')
+        os.system('pipx ensurepath')
+        pipsi_path = '/usr/local/bin/pipx'
+    else:
+        os.system('python -m pip install --user pipx')
+        os.system('python -m pipx ensurepath')
+        pipsi_path = os.path.join(
+            installation.home_path, '.local', 'bin', 'pipx')
     reqs_path = os.path.join(
         installation.repo_path, 'dependencies', 'pipsi', 'base.txt')
-    pipsi_path = os.path.join(
-        installation.home_path, '.local', 'bin', 'pipsi')
     with open(reqs_path, 'rt') as f:
         for line in f:
             line = line.strip()
@@ -22,7 +26,7 @@ def configure(installation):
             if line.startswith('#'):
                 continue
             package_name = line
-            print_info('Installing {package_name} via pipsi'.format(
+            print_info('Installing {package_name} via pipx'.format(
                 package_name=package_name))
             os.system('{pipsi_path} install {package_name}'.format(
                 pipsi_path=pipsi_path,
